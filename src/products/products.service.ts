@@ -1,0 +1,53 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { HandleErrorsService } from 'src/common/services/handle-errors.service';
+import { PaginationProductDto } from './dto';
+import { FilterService } from './services/filter.service';
+import { ProductRepository } from './repositories/product.repository';
+import { Product } from 'generated/prisma';
+import { NotFoundError } from 'rxjs';
+
+@Injectable()
+export class ProductsService {
+  private readonly context = 'products';
+  constructor(
+    private readonly handleErrorsService: HandleErrorsService,
+    private readonly filterService: FilterService,
+    private readonly productRepository: ProductRepository
+  ) { }
+
+  async create(createProductDto: CreateProductDto) {
+    try {
+      return await this.productRepository.create(createProductDto);
+    } catch (error) {
+      this.handleErrorsService.handleError(error, this.context);
+    }
+  }
+
+  async findAll(params: PaginationProductDto) {
+    const fitlers = this.filterService.getFilter(params);
+    const { data, totalPages } = await this.productRepository.findAll(fitlers, params);
+    return {
+      data,
+      totalPages
+    }
+  }
+
+  async findOne(term: Product['id'] | Product['name']) {
+    const product = await this.productRepository.find(term);
+    if (!product) throw new NotFoundException(`Product #${term} not found`);
+    return product
+  }
+
+  async update(id: Product['id'], updateProductDto: UpdateProductDto) {
+    const product = await this.findOne(id);
+    return await this.productRepository.update(product.id, updateProductDto);
+  }
+
+  async remove(id: Product['id']) {
+    const product = await this.findOne(id);
+    console.log("remover product", product);
+    return await this.productRepository.changeStatus(product);
+  }
+}
