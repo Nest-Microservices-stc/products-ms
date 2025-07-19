@@ -41,7 +41,7 @@ export class ProductRepository implements IProductRepository {
         });
     }
 
-    async update(id: Product['id'], data: UpdateProductDto ) : Promise<Product> {
+    async update(id: Product['id'], data: Omit<UpdateProductDto, 'id'> ) : Promise<Product> {
         return await this.prisma.product.update({ where: { id }, data });
     }
 

@@ -40,9 +40,10 @@ export class ProductsService {
     return product
   }
 
-  async update(id: Product['id'], updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
-    return await this.productRepository.update(product.id, updateProductDto);
+  async update(updateProductDto: UpdateProductDto) {
+    await this.findOne(updateProductDto.id);
+    const { id, ...data } = updateProductDto
+    return await this.productRepository.update(id, data);
   }
 
   async remove(id: Product['id']) {

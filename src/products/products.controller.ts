@@ -1,4 +1,4 @@
-import { Controller, Param, Query } from '@nestjs/common';
+import { Controller, Param, ParseUUIDPipe, Query } from '@nestjs/common';
 import { CreateProductDto, PaginationProductDto, UpdateProductDto } from './dto';
 import { ProductsService } from './products.service';
 import { Product } from 'generated/prisma';
@@ -30,14 +30,13 @@ export class ProductsController {
 
   // @Patch(':id')
   @MessagePattern('update_product')
-  update(@Param('id') id: Product['id'], @Payload() updateProductDto: UpdateProductDto) {
-    return this.productsService.update(id, updateProductDto);
+  update(@Payload() updateProductDto: UpdateProductDto) {
+    return this.productsService.update(updateProductDto);
   }
 
   // @Delete(':id')
   @MessagePattern('delete_product')
-  remove(@Param('id') id: Product['id']) {
-    console.log(id);
+  remove(@Payload('id', ParseUUIDPipe) id: Product['id']) {
     return this.productsService.remove(id);
   }
 }
