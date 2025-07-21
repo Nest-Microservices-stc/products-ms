@@ -24,7 +24,9 @@ export class ProductsController {
 
   // @Get(':term')
   @MessagePattern('find_one_product')
-  findOne(@Payload('term') term: Product['id'] | Product['name']) {
+  findOne(
+    @Payload('term') term: Product['id'] | Product['name']
+  ) {
     return this.productsService.findOne(term);
   }
 
