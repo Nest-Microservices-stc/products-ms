@@ -7,25 +7,32 @@ export class RpcCustomExceptionFilter implements ExceptionFilter {
 
   catch(exception: RpcException, host: ArgumentsHost) {
     const error = exception.getError();
+    return this.buildErrorResponse(error);
+  }
 
+  private buildErrorResponse(error: any) {
     if (typeof error === 'object' && error !== null) {
-      const statusCode = (error as any).statusCode || HttpStatus.BAD_REQUEST;
-      const message = (error as any).message || 'Bad Request';
+      const statusCode = error.statusCode || HttpStatus.BAD_REQUEST;
+      const message = error.message || 'Bad Request';
 
-      this.logger.warn(`[MS RpcException]: ${statusCode} - ${message}`, error);
+      this.logWarn(statusCode, message, error);
 
-      return {
-        statusCode,
-        message,
-        ...error,
-      };
+      return { statusCode, message, ...error };
     }
 
-    this.logger.error(`[MS RpcException]: ${String(error)}`);
+    this.logError(String(error));
 
     return {
       statusCode: HttpStatus.BAD_REQUEST,
       message: String(error),
     };
+  }
+
+  private logWarn(statusCode: number, message: string, error: any) {
+    this.logger.warn(`[MS RpcException]: ${statusCode} - ${message}`, error);
+  }
+
+  private logError(message: string) {
+    this.logger.error(`[MS RpcException]: ${message}`);
   }
 }
