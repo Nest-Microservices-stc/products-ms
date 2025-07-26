@@ -7,5 +7,6 @@ export interface IProductRepository {
     findAll(filters: any, params: PaginationProductDto): Promise<FindAllResponse>
     find(term: Product['id'] | Product['name']): Promise<Product | null>
     update(id: Product['id'], data: Omit<UpdateProductDto, 'id'>) : Promise<Product>
-    changeStatus(id: Product): Promise<Product>
+    changeStatus(product: Product): Promise<Product>
+    validateProducts(ids: Product['id'][]): Promise<{ id: Product['id']}[]>
 }

@@ -5,12 +5,14 @@ import { FindAllResponse } from '../interfaces/data/product.interface';
 import { Product } from 'generated/prisma';
 import { IProductRepository } from '../interfaces/class/product-repository.interface';
 import { isUUID } from 'class-validator';
+import { PaginationService } from 'src/common/services/pagination.service';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {
 
     constructor(
-        private readonly prisma: PrismaService
+        private readonly prisma: PrismaService,
+        private readonly paginationService: PaginationService
     ) { }
 
     async create(data: CreateProductDto) : Promise<Product> {
@@ -18,8 +20,8 @@ export class ProductRepository implements IProductRepository {
     }
 
     async findAll(filters: any, params: PaginationProductDto): Promise<FindAllResponse> {
-        const { take = 10, skip = 0  } = params
-        const [data, totalProducts] = await Promise.all([
+        const { skip, take } = this.paginationService.getPagination(params.page, params.limit);
+        const [data, total] = await Promise.all([
             this.prisma.product.findMany({
                 where: filters,
                 take,
@@ -27,10 +29,10 @@ export class ProductRepository implements IProductRepository {
             }),
             this.prisma.product.count({ where: filters }),
         ]);
-
+        const meta = this.paginationService.buildMeta(total, skip, take);
         return {
             data,
-            totalPages: Math.ceil(totalProducts / take)
+            meta
         };
     }
 
@@ -49,5 +51,13 @@ export class ProductRepository implements IProductRepository {
         return await this.prisma.product.update({ where: { id: product.id }, data: { availability: !product.availability } });
     }
     
+    async validateProducts(ids: string[]) {
+        const products = await this.prisma.product.findMany({
+            where: {
+                id: { in: ids }
+            }
+        })
+        return products
+    }
 
 }

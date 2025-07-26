@@ -1,44 +1,47 @@
-import { Controller, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, ParseUUIDPipe } from '@nestjs/common';
 import { CreateProductDto, PaginationProductDto, UpdateProductDto } from './dto';
 import { ProductsService } from './products.service';
 import { Product } from 'generated/prisma';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ValidateProductDto } from './dto/validate-product.dto';
 
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  // @Post()
-  @MessagePattern('create_product')
+  @MessagePattern('createProduct')
   create(@Payload() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
-  // @Get()
-  @MessagePattern('find_all_products')
+  @MessagePattern('findAllProducts')
   findAll(
     @Payload() params: PaginationProductDto
   ) {
     return this.productsService.findAll(params);
   }
 
-  // @Get(':term')
-  @MessagePattern('find_one_product')
+  @MessagePattern('findOneProduct')
   findOne(
     @Payload('term') term: Product['id'] | Product['name']
   ) {
     return this.productsService.findOne(term);
   }
 
-  // @Patch(':id')
-  @MessagePattern('update_product')
+  @MessagePattern('updateProduct')
   update(@Payload() updateProductDto: UpdateProductDto) {
     return this.productsService.update(updateProductDto);
   }
 
-  // @Delete(':id')
-  @MessagePattern('delete_product')
+  @MessagePattern('deleteProduct')
   remove(@Payload('id', ParseUUIDPipe) id: Product['id']) {
     return this.productsService.remove(id);
+  }
+
+  @MessagePattern('validateProducts')
+  async validateProducts(
+    @Payload() ids: ValidateProductDto
+  ) {
+    return await this.productsService.validateProducts(ids);
   }
 }

@@ -4,19 +4,19 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ParseTrimStringPipe } from './common/pipes/parse-trim-string.pipe';
 import { envs } from './config/envs';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import { RpcCustomExceptionFilter } from './common/exceptions/rpc-custom-exception.filter';
 
 async function bootstrap() {
   const logger = new Logger('MAIN');
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.NATS,
       options: {
-        port: envs.port
+        servers: envs.natsServers,
       }
     },
   );
-
 
   app.useGlobalPipes(
     new ParseTrimStringPipe(),
@@ -26,6 +26,7 @@ async function bootstrap() {
     })
   );
 
+  app.useGlobalFilters(new RpcCustomExceptionFilter());
 
   await app.listen();
 

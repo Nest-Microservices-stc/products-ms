@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
@@ -28,11 +28,10 @@ export class HandleErrorsService {
             const field = error.meta?.target?.[0];
             const fieldMessage = this.ErrorsMapping[context]?.[field];
 
-            throw new BadRequestException({
-                message: fieldMessage ?? `Duplicate value for field '${field}'`,
-                statusCode: 400,
-                error: 'Bad Request',
-            });
+            this.throwRpcException(
+                fieldMessage ?? `Duplicate value for field '${field}'`,
+                409
+            );
         }
 
         throw new InternalServerErrorException(error.message ?? 'Internal server error');

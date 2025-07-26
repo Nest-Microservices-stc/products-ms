@@ -2,5 +2,13 @@ import { Product } from "generated/prisma";
 
 export interface FindAllResponse {
     data: Product[];
-    totalPages: number;
+    meta: {
+        totalItems: number;
+        itemCount: number;
+        itemsPerPage: number;
+        totalPages: number;
+        currentPage: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
 }
