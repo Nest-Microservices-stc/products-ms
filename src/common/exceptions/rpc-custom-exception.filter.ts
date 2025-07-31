@@ -17,7 +17,7 @@ export class RpcCustomExceptionFilter implements ExceptionFilter {
 
       this.logWarn(statusCode, message, error);
 
-      return { statusCode, message, ...error };
+      return { statusCode, message, error };
     }
 
     this.logError(String(error));

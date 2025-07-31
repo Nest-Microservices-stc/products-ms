@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { HandleErrorsService } from 'src/common/services/handle-errors.service';
+import { HandleErrorsService } from 'src/common/services/rpc/handle-errors.service';
 import { PaginationProductDto } from './dto';
 import { FilterService } from './services/filter.service';
 import { ProductRepository } from './repositories/product.repository';

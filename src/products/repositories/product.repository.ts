@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/common/services/prisma.service';
+import { PrismaService } from 'src/common/services/prisma/prisma.service';
 import { CreateProductDto, PaginationProductDto, UpdateProductDto } from '../dto';
 import { FindAllResponse } from '../interfaces/data/product.interface';
 import { Product } from 'generated/prisma';
 import { IProductRepository } from '../interfaces/class/product-repository.interface';
 import { isUUID } from 'class-validator';
-import { PaginationService } from 'src/common/services/pagination.service';
+import { PaginationService } from 'src/common/services/pagination/pagination.service';
 
 @Injectable()
 export class ProductRepository implements IProductRepository {

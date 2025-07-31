@@ -7,7 +7,7 @@ import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { RpcCustomExceptionFilter } from './common/exceptions/rpc-custom-exception.filter';
 
 async function bootstrap() {
-  const logger = new Logger('MAIN');
+  const logger = new Logger('Products-MS');
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
