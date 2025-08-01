@@ -5,14 +5,16 @@ interface EnvVars {
     PORT: number;
     DATABASE_URL: string;
     NATS_SERVERS: string[];
+    NODE_ENV: 'DEVELOPMENT' | 'PRODUCTION' | 'TESTING';
 }
 
 const envsSchema = joi.object<EnvVars>({
     PORT: joi.number().required(),
     DATABASE_URL: joi.string().required(),
-    NATS_SERVERS: joi.array().items(joi.string()).required()
+    NATS_SERVERS: joi.array().items(joi.string()).required(),
+    NODE_ENV: joi.string().valid('DEVELOPMENT', 'PRODUCTION', 'TESTING').required()
 })
-.unknown(true);
+    .unknown(true);
 
 const { error, value } = envsSchema.validate({
     ...process.env,
@@ -23,10 +25,11 @@ if (error) {
     throw new Error(`Config validation error: ${error.message}`);
 }
 
-const envVars : EnvVars = value
+const envVars: EnvVars = value
 
 export const envs = {
     port: envVars.PORT,
     databaseUrl: envVars.DATABASE_URL,
-    natsServers: envVars.NATS_SERVERS
+    natsServers: envVars.NATS_SERVERS,
+    nodeEnv: envVars.NODE_ENV
 }
